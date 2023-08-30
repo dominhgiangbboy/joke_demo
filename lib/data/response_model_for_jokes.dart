@@ -10,6 +10,7 @@ class ResponsModelForJokes {
   final int id;
   final bool safe;
   final String lang;
+  final String joke;
   ResponsModelForJokes({
     required this.error,
     required this.category,
@@ -20,6 +21,7 @@ class ResponsModelForJokes {
     required this.id,
     required this.safe,
     required this.lang,
+    required this.joke,
   });
 
   Map<String, dynamic> toMap() {
@@ -33,6 +35,7 @@ class ResponsModelForJokes {
       'id': id,
       'safe': safe,
       'lang': lang,
+      'joke': joke,
     };
   }
 
@@ -47,6 +50,7 @@ class ResponsModelForJokes {
       id: map['id']?.toInt() ?? 0,
       safe: map['safe'] ?? false,
       lang: map['lang'] ?? '',
+      joke: map['joke'] ?? '',
     );
   }
 

@@ -10,9 +10,9 @@ class RequestJokeModel {
   String convertToQuery() {
     String query = '/';
     if (category.isNotEmpty) {
-      query += '${category.join(',').trim()}&';
+      query += '${category.join(',').trim()}?';
     } else {
-      query += 'Any&';
+      query += 'Any?';
     }
     if (contains.isNotEmpty) {
       query += 'contains=${contains.trim()}&';
@@ -21,6 +21,18 @@ class RequestJokeModel {
     if (blacklistFlags.isNotEmpty) {
       query += 'blacklistFlags=${blacklistFlags.join(',').trim()}&';
     }
-    return query;
+    return query.substring(0, query.length - 1);
+  }
+
+  RequestJokeModel copyWith({
+    String? contains,
+    List<String>? category,
+    List<String>? blacklistFlags,
+  }) {
+    return RequestJokeModel(
+      contains: contains ?? this.contains,
+      category: category ?? this.category,
+      blacklistFlags: blacklistFlags ?? this.blacklistFlags,
+    );
   }
 }
