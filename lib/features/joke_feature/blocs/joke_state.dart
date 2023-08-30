@@ -8,14 +8,22 @@ class JokeState extends Equatable {
   final List<String> blacklistFlags;
   final String setupJoke;
   final String deliveryJoke;
+  final String? errorMessage;
   const JokeState({
     required this.status,
     required this.categories,
     required this.blacklistFlags,
     required this.setupJoke,
     required this.deliveryJoke,
+    this.errorMessage,
   });
-
+  factory JokeState.initialJokeState() => const JokeState(
+        status: BlocStatus.initial,
+        categories: [],
+        blacklistFlags: [],
+        setupJoke: '',
+        deliveryJoke: '',
+      );
   @override
   List<Object?> get props => [status, categories, blacklistFlags];
 
@@ -25,6 +33,7 @@ class JokeState extends Equatable {
     List<String>? blacklistFlags,
     String? setupJoke,
     String? deliveryJoke,
+    String? errorMessage,
   }) {
     return JokeState(
       status: status ?? this.status,
@@ -32,6 +41,7 @@ class JokeState extends Equatable {
       blacklistFlags: blacklistFlags ?? this.blacklistFlags,
       setupJoke: setupJoke ?? this.setupJoke,
       deliveryJoke: deliveryJoke ?? this.deliveryJoke,
+      errorMessage: errorMessage ?? this.errorMessage,
     );
   }
 }

@@ -16,17 +16,23 @@ class JokesPage extends StatefulWidget {
   State<JokesPage> createState() => _JokesPageState();
 }
 
+const String appTitle = 'Jokes Finder';
+const String errorMessage = 'Error fetching jokes';
+const String submitSuccessMessage = 'Joke found';
+const String categoryLabel = 'Categories';
+const String blacklistLabel = 'Blacklists';
+const String searchLabel = 'Search jokes';
+const String keyWordLabel = 'Search for keywords';
+
 class _JokesPageState extends State<JokesPage> {
   final _formKey = GlobalKey<FormState>();
-  JokeCategory currentCategory = JokeCategory.any;
-  BlackList currentBlackList = BlackList.nsfw;
-  String currentSearchString = '';
+  final TextEditingController controller = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
           title: Text(
-            'Jokes',
+            'Jokes Finder',
             style: TextStyle(color: Theme.of(context).colorScheme.onPrimary),
           ),
           backgroundColor: Theme.of(context).colorScheme.primary,
@@ -35,8 +41,8 @@ class _JokesPageState extends State<JokesPage> {
           create: (context) => widget.bloc,
           child: BlocConsumer<JokeBloc, JokeState>(listener: (BuildContext context, JokeState state) {
             if (state.status == BlocStatus.error) {
-              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                content: Text('Error submitting joke'),
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                content: Text(state.errorMessage ?? errorMessage),
               ));
               widget.bloc.add(const ResetJokeSubmit());
             }
@@ -46,59 +52,108 @@ class _JokesPageState extends State<JokesPage> {
             }
             return Form(
               key: _formKey,
-              child: Column(
-                children: [
-                  if (state.status == BlocStatus.loaded)
-                    const Padding(
-                      padding: EdgeInsets.all(20),
-                      child: Text('Joke submitted successfully'),
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    if (state.status == BlocStatus.loaded)
+                      Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                              color: Theme.of(context).colorScheme.primary,
+                            ),
+                            color: Theme.of(context).colorScheme.onPrimaryContainer,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Column(
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.all(16),
+                                child: Text(submitSuccessMessage,
+                                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                          color: Theme.of(context).colorScheme.onPrimary,
+                                        )),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(20),
+                                child: Text(state.setupJoke,
+                                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                          color: Theme.of(context).colorScheme.onPrimary,
+                                        )),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(8),
+                                child: Text(
+                                  state.deliveryJoke,
+                                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                        color: Theme.of(context).colorScheme.onPrimary,
+                                      ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    const SizedBox(
+                      height: 20,
                     ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  Text('Categories', style: Theme.of(context).textTheme.titleMedium),
-                  DropdownButtonJokesSelection(
-                    list: JokeCategory.values.map((e) => e.toString().split('.').last).toList(),
-                    onChanged: (value) {
-                      currentCategory = JokeCategory.values.firstWhere((e) => e.toString() == 'JokeCategory.$value');
-                    },
-                  ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  Text('Blacklists', style: Theme.of(context).textTheme.titleMedium),
-                  DropdownButtonJokesSelection(
-                    list: BlackList.values.map((e) => e.toString().split('.').last).toList(),
-                    onChanged: (value) {
-                      currentBlackList = BlackList.values.firstWhere((e) => e.toString() == 'BlackList.$value');
-                    },
-                  ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: TextFormField(
-                      validator: (value) {
-                        return null;
+                    Text(categoryLabel, style: Theme.of(context).textTheme.titleMedium),
+                    DropdownButtonJokesSelection(
+                      list: JokeCategory.values.map((e) => e.toString().split('.').last).toList(),
+                      currentList: state.categories,
+                      onChanged: (String value, bool isSelected) {
+                        if (isSelected) {
+                          widget.bloc.add(AddCategoryJokeEvent(category: value));
+                        } else {
+                          widget.bloc.add(RemoveCategoryJokeEvent(category: value));
+                        }
                       },
-                      decoration: const InputDecoration(
-                        border: OutlineInputBorder(),
-                        labelText: 'Search for a jokes',
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    Text(blacklistLabel, style: Theme.of(context).textTheme.titleMedium),
+                    DropdownButtonJokesSelection(
+                      list: BlackList.values.map((e) => e.toString().split('.').last).toList(),
+                      currentList: state.blacklistFlags,
+                      onChanged: (String value, bool isSelected) {
+                        if (isSelected) {
+                          widget.bloc.add(AddBlacklistFlagsJokeEvent(blacklistFlags: value));
+                        } else {
+                          widget.bloc.add(RemoveBlacklistFlagsJokeEvent(blacklistFlags: value));
+                        }
+                      },
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: TextFormField(
+                        validator: (value) {
+                          return null;
+                        },
+                        controller: controller,
+                        decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
+                          labelText: keyWordLabel,
+                        ),
                       ),
                     ),
-                  ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  ElevatedButton(
-                      onPressed: () {
-                        widget.bloc.add(JokeEventSubmit(
-                          searchString: currentSearchString,
-                        ));
-                      },
-                      child: const Text('Submit')),
-                ],
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    ElevatedButton(
+                        onPressed: () {
+                          widget.bloc.add(JokeEventSubmit(
+                            searchString: controller.text,
+                          ));
+                        },
+                        child: const Text(searchLabel)),
+                  ],
+                ),
               ),
             );
           }),
@@ -111,9 +166,11 @@ class DropdownButtonJokesSelection extends StatefulWidget {
     Key? key,
     required this.list,
     this.onChanged,
+    required this.currentList,
   }) : super(key: key);
   final List<String> list;
-  final StringCallback? onChanged;
+  final JokeCheckBoxCallback? onChanged;
+  final List<String> currentList;
   @override
   State<DropdownButtonJokesSelection> createState() => _DropdownButtonJokesSelectionState();
 }
@@ -128,26 +185,38 @@ class _DropdownButtonJokesSelectionState extends State<DropdownButtonJokesSelect
 
   @override
   Widget build(BuildContext context) {
-    return DropdownButton<String>(
-      value: dropdownValue,
-      icon: const Icon(Icons.arrow_drop_down),
-      elevation: 16,
-      style: const TextStyle(color: Colors.deepPurple),
-      borderRadius: BorderRadius.circular(20),
-      focusColor: Colors.deepPurple,
-      onChanged: (String? value) {
-        // This is called when the user selects an item.
-        setState(() {
-          dropdownValue = value!;
-        });
-        if (widget.onChanged != null) {
-          widget.onChanged!(value!);
-        }
+    return MenuAnchor(
+      builder: (BuildContext context, MenuController controller, Widget? child) {
+        return TextButton(
+          onPressed: () {
+            if (controller.isOpen) {
+              controller.close();
+            } else {
+              controller.open();
+            }
+          },
+          child: const Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text('OPEN MENU'),
+              Icon(Icons.arrow_downward_rounded),
+            ],
+          ),
+        );
       },
-      items: widget.list.map<DropdownMenuItem<String>>((String value) {
-        return DropdownMenuItem<String>(
-          value: value,
-          child: Text(value),
+      alignmentOffset: const Offset(100, 0),
+      menuChildren: widget.list.map<CheckboxMenuButton>((String stringValue) {
+        return CheckboxMenuButton(
+          value: widget.currentList.contains(stringValue),
+          onChanged: (bool? value) {
+            if (widget.onChanged != null) {
+              widget.onChanged!(stringValue, value!);
+            }
+          },
+          child: Text(
+            stringValue,
+            style: Theme.of(context).textTheme.labelMedium,
+          ),
         );
       }).toList(),
     );
