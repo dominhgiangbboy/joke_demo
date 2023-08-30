@@ -1,4 +1,5 @@
 import 'package:demo_for_vnext/core/http_client.dart';
+import 'package:demo_for_vnext/core/url_and_endpoint.dart';
 import 'package:demo_for_vnext/features/joke_feature/blocs/joke_bloc.dart';
 import 'package:demo_for_vnext/features/joke_feature/jokes.dart';
 import 'package:dio/dio.dart';
@@ -6,6 +7,7 @@ import 'package:flutter/material.dart';
 
 void main() {
   final Dio dio = Dio();
+  dio.options.baseUrl = baseUrl;
   final HttpClient client = DioClient(dio: dio);
   final JokeBloc bloc = JokeBloc(client);
   runApp(MyApp(
