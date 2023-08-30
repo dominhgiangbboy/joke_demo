@@ -1,1 +1,1 @@
-typedef StringCallback = Function(String value);
+typedef JokeCheckBoxCallback = Function(String value, bool isSelected);

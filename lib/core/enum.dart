@@ -1,3 +1,5 @@
+// ignore_for_file: constant_identifier_names
+
 enum BlocStatus {
   initial,
   loading,
@@ -6,13 +8,12 @@ enum BlocStatus {
 }
 
 enum JokeCategory {
-  any,
-  programming,
-  miscellaneous,
-  dark,
-  pun,
-  spooky,
-  christmas,
+  Programming,
+  Misc,
+  Dark,
+  Pun,
+  Spooky,
+  Christmas,
 }
 
 enum BlackList {
