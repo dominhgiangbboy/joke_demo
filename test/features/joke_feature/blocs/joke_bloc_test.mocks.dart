@@ -39,4 +39,13 @@ class MockHttpClient extends _i1.Mock implements _i2.HttpClient {
         returnValue: _i3.Future<dynamic>.value(),
         returnValueForMissingStub: _i3.Future<dynamic>.value(),
       ) as _i3.Future<dynamic>);
+  @override
+  _i3.Future<dynamic> get(String? urlEnpoint) => (super.noSuchMethod(
+        Invocation.method(
+          #get,
+          [urlEnpoint],
+        ),
+        returnValue: _i3.Future<dynamic>.value(),
+        returnValueForMissingStub: _i3.Future<dynamic>.value(),
+      ) as _i3.Future<dynamic>);
 }
