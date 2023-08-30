@@ -55,7 +55,7 @@ class JokeBloc extends Bloc<JokeEvent, JokeState> {
       );
       final dynamic response = await httpClient.get('joke${requestJokeModel.convertToQuery()}');
       if (response['error'] != null && response['error'] == true) {
-        emit(state.copyWith(status: BlocStatus.error, errorMessage: response.data['message']));
+        emit(state.copyWith(status: BlocStatus.error, errorMessage: response['message']));
         return;
       }
       final ResponsModelForJokes responseMapped = ResponsModelForJokes.fromMap(response);
