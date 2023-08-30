@@ -1,4 +1,3 @@
-import 'package:demo_for_vnext/data/joke.dart';
 import 'package:flutter/material.dart';
 
 import 'package:demo_for_vnext/core/enum.dart';
@@ -49,6 +48,11 @@ class _JokesPageState extends State<JokesPage> {
               key: _formKey,
               child: Column(
                 children: [
+                  if (state.status == BlocStatus.loaded)
+                    const Padding(
+                      padding: EdgeInsets.all(20),
+                      child: Text('Joke submitted successfully'),
+                    ),
                   const SizedBox(
                     height: 20,
                   ),
@@ -76,9 +80,6 @@ class _JokesPageState extends State<JokesPage> {
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: TextFormField(
                       validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter some text';
-                        }
                         return null;
                       },
                       decoration: const InputDecoration(
@@ -92,15 +93,9 @@ class _JokesPageState extends State<JokesPage> {
                   ),
                   ElevatedButton(
                       onPressed: () {
-                        if (_formKey.currentState!.validate()) {
-                          widget.bloc.add(JokeEventSubmit(
-                            joke: JokeEntity(
-                              category: currentCategory,
-                              blacklist: currentBlackList,
-                              searchString: currentSearchString,
-                            ),
-                          ));
-                        }
+                        widget.bloc.add(JokeEventSubmit(
+                          searchString: currentSearchString,
+                        ));
                       },
                       child: const Text('Submit')),
                 ],

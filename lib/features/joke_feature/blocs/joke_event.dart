@@ -1,4 +1,3 @@
-import 'package:demo_for_vnext/data/joke.dart';
 import 'package:equatable/equatable.dart';
 
 class JokeEvent extends Equatable {
@@ -13,12 +12,11 @@ class ResetJokeSubmit extends JokeEvent {
 }
 
 class JokeEventSubmit extends JokeEvent {
-  final JokeEntity joke;
-
+  final String? searchString;
   const JokeEventSubmit({
-    required this.joke,
+    this.searchString,
   });
 
   @override
-  List<Object> get props => [joke];
+  List<Object> get props => [searchString ?? ''];
 }
